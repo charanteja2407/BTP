@@ -523,67 +523,156 @@ function calculateMiddlePoint(nodes, fromNode, toNode) {
 	return null;
 }
 
-function dijkstra(nodes, edges, startNode, endNode) {
-	console.log("asdf", nodes, edges, startNode, endNode);
+// function dijkstra(nodes, edges, startNode, endNode) {
+// 	console.log("asdf", nodes, edges, startNode, endNode);
 
-	const distances = {};
-	const previousNodes = {};
-	const unvisitedNodes = [];
+// 	const distances = {};
+// 	const previousNodes = {};
+// 	const unvisitedNodes = [];
 
-	nodes.forEach((node) => {
-		unvisitedNodes.push(node.id);
-		distances[node.id] = Infinity;
-		previousNodes[node.id] = null;
+// 	nodes.forEach((node) => {
+// 		unvisitedNodes.push(node.id);
+// 		distances[node.id] = Infinity;
+// 		previousNodes[node.id] = null;
+// 	});
+
+// 	// console.log(nodes);
+
+// 	distances[startNode] = 0;
+// 	// console.log("start node is : " + startNode);
+
+// 	while (unvisitedNodes.length > 0) {
+// 		const currentNode = getClosestNode(unvisitedNodes, distances);
+// 		//console.log(currentNode)
+// 		// console.log("closest node: " + currentNode);
+// 		unvisitedNodes.splice(unvisitedNodes.indexOf(currentNode), 1);
+// 		// console.log(unvisitedNodes, distances);
+// 		//console.log(edges)
+
+// 		edges
+// 			.filter((edge) => edge.from == currentNode)
+// 			.forEach((edge) => {
+// 				//console.log(edge)
+// 				const potentialDistance =
+// 					distances[currentNode] +
+// 					getEdgeWeight(
+// 						currentNode,
+// 						edge.to,
+// 						edge.arrows && edge.arrows.to,
+// 						edges
+// 					);
+// 				// console.log("potential distance is : ");
+// 				//console.log(potentialDistance);
+
+// 				if (potentialDistance < distances[edge.to]) {
+// 					distances[edge.to] = potentialDistance;
+// 					previousNodes[edge.to] = currentNode;
+// 				}
+// 			});
+// 	}
+
+// 	//console.log(distances);
+
+// 	const shortestPath = [];
+// 	let currentNode = endNode;
+
+// 	while (currentNode !== null) {
+// 		shortestPath.unshift(currentNode);
+// 		currentNode = previousNodes[currentNode];
+// 	}
+
+// 	console.log(shortestPath);
+
+// 	return shortestPath.length > 1 ? shortestPath : null;
+// }
+
+class PriorityQueue {
+	constructor() {
+		this.queue = [];
+	}
+
+	enqueue(item) {
+		this.queue.push(item);
+		this.queue.sort((a, b) => a[0] - b[0]);
+	}
+
+	dequeue() {
+		if (this.isEmpty()) return -1;
+		return this.queue.shift();
+	}
+
+	isEmpty() {
+		return this.queue.length === 0;
+	}
+}
+
+function dijkstra(nodes, edges, start, end) {
+	edges.forEach((e) => {
+		e.from = parseInt(e.from);
+		e.to = parseInt(e.to);
+		e.weight = parseInt(e.weight);
 	});
 
-	// console.log(nodes);
+	const nodeMap = {};
+	nodes.forEach((node, i) => {
+		nodeMap[node.id] = i;
+	});
 
-	distances[startNode] = 0;
-	// console.log("start node is : " + startNode);
+	const sn = nodeMap[start];
+	const en = nodeMap[end];
 
-	while (unvisitedNodes.length > 0) {
-		const currentNode = getClosestNode(unvisitedNodes, distances);
-		//console.log(currentNode)
-		// console.log("closest node: " + currentNode);
-		unvisitedNodes.splice(unvisitedNodes.indexOf(currentNode), 1);
-		// console.log(unvisitedNodes, distances);
-		//console.log(edges)
+	let n = nodes.length;
 
-		edges
-			.filter((edge) => edge.from == currentNode)
-			.forEach((edge) => {
-				//console.log(edge)
-				const potentialDistance =
-					distances[currentNode] +
-					getEdgeWeight(
-						currentNode,
-						edge.to,
-						edge.arrows && edge.arrows.to,
-						edges
-					);
-				// console.log("potential distance is : ");
-				//console.log(potentialDistance);
+	const adj = {};
+	edges.forEach((edge) => {
+		let from = nodeMap[edge.from];
+		let to = nodeMap[edge.to];
+		let dis = edge.weight;
 
-				if (potentialDistance < distances[edge.to]) {
-					distances[edge.to] = potentialDistance;
-					previousNodes[edge.to] = currentNode;
-				}
-			});
+		if (!adj[from]) adj[from] = [];
+		adj[from].push([to, dis]);
+	});
+
+	const par = {};
+	par[sn] = -1;
+
+	const dist = Array(n).fill(Infinity);
+
+	dist[sn] = 0;
+	const minHeap = new PriorityQueue();
+	minHeap.enqueue([0, sn]);
+
+	while (!minHeap.isEmpty()) {
+		const [d, x] = minHeap.dequeue();
+
+		if (x == en) break;
+
+		adj[x].forEach((yData) => {
+			let y = yData[0];
+			let w = yData[1];
+
+			if (d + w < dist[y]) {
+				dist[y] = d + w;
+				minHeap.enqueue([d + w, y]);
+				par[y] = x;
+			}
+		});
 	}
 
-	//console.log(distances);
+	let path = [];
+	if (dist[en] == Infinity) return;
 
-	const shortestPath = [];
-	let currentNode = endNode;
-
-	while (currentNode !== null) {
-		shortestPath.unshift(currentNode);
-		currentNode = previousNodes[currentNode];
+	let x = en;
+	while (par[x] != -1) {
+		path.push(x);
+		x = par[x];
 	}
+	path.push(sn);
 
-	console.log(shortestPath);
+	let ans = [];
+	path.reverse().forEach((p) => ans.push(nodes[p].id));
 
-	return shortestPath.length > 1 ? shortestPath : null;
+	return ans.length > 1 ? ans : null;
 }
 
 function getClosestNode(unvisitedNodes, distances) {
