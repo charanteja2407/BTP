@@ -113,9 +113,16 @@ function createGraph(graphType) {
 		chart.edges().arrows().enabled(true);
 	}
 
+	if (nodes.length < 12) {
+		chart.nodes().labels().enabled(true);
+		chart.nodes().labels().fontSize(label_size);
+	} else {
+		chart.nodes().labels().enabled(false);
+	}
+
 	// chart.edges().labels().enabled(false); // Removed edge labels
-	chart.nodes().labels().enabled(true);
-	chart.nodes().labels().fontSize(label_size);
+	// chart.nodes().labels().enabled(true);
+	// chart.nodes().labels().fontSize(label_size);
 	// var arrows = chart.edges().arrows();
 	// arrows.enabled(false);
 	// arrows.size(8);
@@ -183,14 +190,22 @@ function resetgraph() {
 	chart.dispose();
 	chart = anychart.graph(data);
 
-	var labels = chart.edges().labels();
-	labels.enabled(true);
+	// var labels = chart.edges().labels();
+	// labels.enabled(true);
 
-	chart.nodes().labels().enabled(true);
-	chart.nodes().labels().fontSize(label_size);
-	labels.enabled(true);
-	labels.format("{%weight}");
-	labels.fontSize(10);
+	if (nodes.length < 12) {
+		chart.nodes().labels().enabled(true);
+		chart.nodes().labels().fontSize(label_size);
+	}
+	//  else {
+	// 	chart.nodes().labels().enabled(false);
+	// }
+
+	// chart.nodes().labels().enabled(true);
+	// chart.nodes().labels().fontSize(label_size);
+	// labels.enabled(true);
+	// labels.format("{%weight}");
+	// labels.fontSize(10);
 
 	if (graphType == "Y") {
 		chart.edges().arrows().enabled(true);
@@ -200,101 +215,6 @@ function resetgraph() {
 	chart.draw();
 }
 
-// function highlightPath(path) {
-//   const container = document.getElementById("container");
-
-//   for (let i = 0; i < path.length - 1; i++) {
-//     const from = path[i],
-//       to = path[i + 1];
-//     for (let j = 0; j < data.edges.length; j++) {
-//       if (data.edges[j].from == from && data.edges[j].to == to) {
-//         data.edges[j].normal = {
-//           stroke: {
-//             color: "#ffa000",
-//             thickness: "2",
-//             lineJoin: "round",
-//           },
-//           arrows: {
-//             to: true,
-//             from: true,
-//           },
-//         };
-//       } else if (data.edges[j].from == to && data.edges[j].to == from) {
-//         data.edges[j].normal = {
-//           stroke: {
-//             color: "#ffa000",
-//             thickness: "2",
-//             lineJoin: "round",
-//           },
-//           arrows: {
-//             from: true,
-//             to: true,
-//           },
-//         };
-//       }
-//     }
-//   }
-
-//   chart.dispose(); // Dispose the current chart
-//   chart = anychart.graph(data); // Create a new chart with updated data
-
-//   if (nodes.length < 12) {
-//     chart.nodes().labels().enabled(true);
-//     chart.nodes().labels().fontSize(label_size);
-//   } else {
-//     chart.nodes().labels().enabled(false);
-//   }
-
-//   chart.container(container);
-//   chart.draw();
-// }
-
-//   function dijkstra(nodes, edges, startNode, endNode) {
-//     const distances = {};
-//     const previousNodes = {};
-//     const unvisitedNodes = [];
-
-//     nodes.forEach((node) => {
-//       unvisitedNodes.push(node.id);
-//       distances[node.id] = Infinity;
-//       previousNodes[node.id] = null;
-//     });
-
-//     distances[startNode] = 0;
-
-//     while (unvisitedNodes.length > 0) {
-//       const currentNode = getClosestNode(unvisitedNodes, distances);
-//       unvisitedNodes.splice(unvisitedNodes.indexOf(currentNode), 1);
-//       edges
-//         .filter((edge) => edge.from === currentNode)
-//         .forEach((edge) => {
-//           // const potentialDistance =
-//           //   distances[currentNode] +
-//           //   getEdgeWeight(currentNode, edge.to, edge.from);
-//           // getEdgeWeight(currentNode, edge.to, edge.from, edge.arrows && edge.arrows.to);
-//           const potentialDistance =
-// distances[currentNode] +
-// getEdgeWeight(currentNode, edge.to, edge.arrows && edge.arrows.to);
-
-//           if (potentialDistance < distances[edge.to]) {
-//             distances[edge.to] = potentialDistance;
-//             previousNodes[edge.to] = currentNode;
-//           }
-//         });
-//     }
-
-//     const shortestPath = [];
-//     let currentNode = endNode;
-
-//     while (currentNode !== null) {
-//       shortestPath.unshift(currentNode);
-//       currentNode = previousNodes[currentNode];
-//     }
-
-//     return shortestPath.length > 1 ? shortestPath : null;
-//   }
-
-/**/
 function highlightPath(path, graphType) {
 	const container = document.getElementById("container");
 	var data = {
@@ -403,9 +323,9 @@ function highlightPath(path, graphType) {
 		chart.nodes().labels().enabled(false);
 	}
 
-	var labels = chart.edges().labels();
-	chart.nodes().labels().enabled(true);
+	// chart.nodes().labels().enabled(true);
 
+	var labels = chart.edges().labels();
 	labels.format("{%weight}");
 	labels.fontSize(10);
 
