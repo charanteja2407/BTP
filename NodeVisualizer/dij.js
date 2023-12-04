@@ -647,16 +647,18 @@ function dijkstra(nodes, edges, start, end) {
 
 		if (x == en) break;
 
-		adj[x].forEach((yData) => {
-			let y = yData[0];
-			let w = yData[1];
+		if (adj[x]) {
+			adj[x].forEach((yData) => {
+				let y = yData[0];
+				let w = yData[1];
 
-			if (d + w < dist[y]) {
-				dist[y] = d + w;
-				minHeap.enqueue([d + w, y]);
-				par[y] = x;
-			}
-		});
+				if (d + w < dist[y]) {
+					dist[y] = d + w;
+					minHeap.enqueue([d + w, y]);
+					par[y] = x;
+				}
+			});
+		}
 	}
 
 	let path = [];
